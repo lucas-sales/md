@@ -1,5 +1,5 @@
-pandas~=1.5.2
+pandas~=1.5.3
 python-dotenv~=0.21.0
-streamlit
-pymysql
-mysql-connector-python
+streamlit~=1.25.0
+pymysql~=1.1.0
+mysql-connector-python~=8.0.33

@@ -20,7 +20,7 @@ def write():
     db = data_setup()
     
     q1 = db.select(queries.QUERY1)
-    df = pd.DataFrame(q1, columns=['nome_credor', 'media_liquida_semestral'])
+    df = pd.DataFrame(q1, columns=['nome_credor', 'media_liquida_semestral'], index=[i for i in range(1, 51)])
 
     q2 = db.select(queries.QUERY2)
     df2 = pd.DataFrame(q2, columns=['trimestre', 'codigo_acao', 'nome_acao', 'valor_empenhado_total', 'ano'])
@@ -31,13 +31,16 @@ def write():
     q4 = db.select(queries.QUERY4)
     df4 = pd.DataFrame(q4, columns=['quadrimestre', 'nome_acao', 'quantidade_creditos', 'media_valor_liquido_acao'])
 
-    # Layout da página
-    # tab1, tab2 = st.tabs([])
 
     with st.spinner("Loding..."):
-        st.table(df)
         st.write(
             """
             # Despesas Orçamentárias - Banco Tradicional
             """
         )
+        st.divider()
+        st.dataframe(
+            df,
+            column_config={
+        "nome_credor": "Nome do credor",
+        "media_liquida_semestral": "Média líquida semestral"})

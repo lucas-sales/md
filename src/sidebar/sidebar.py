@@ -10,6 +10,8 @@ def write(PAGES: list)  -> any:
         """
         This app is maintained by Lucas Gabriel and was built in `Python` using the `streamlit` library. 
         The purpose of this app is to show the use of a Data Warehouse to store and analyze data.
+        Access the source code at:
+        https://github.com/lucas-sales/md
 """
     )
     
