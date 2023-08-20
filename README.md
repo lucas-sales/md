@@ -33,3 +33,6 @@ Para executar o projeto basta rodar o seguinte comando no terminal, dentro da pa
     streamlit run .\main.py
 
 A seguir, acesse a url *http://localhost.com:8501*
+
+## Acessar o projeto remotamente
+Para acessar e visualizar o conteúdo do Streamlit, basta acessar a url: *https://grupo4md.streamlit.app/*
