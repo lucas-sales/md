@@ -35,8 +35,12 @@ def write():
     db = data_setup()
     
     # Carregando dados da QUERY 1
-    df1 = fetch_data(db, dw_queries.QUERY1, ['credor', 'ano', 'mes', 'trimestre', 'valor_pago_total',
-                                              'valor_liquidado_total', 'diferenca_pago_liquidado'])
+    df1 = fetch_data(db, dw_queries.QUERY1, ['credor', 'ano', 'mes', 'trimestre', 'Valor Pago Total',
+                                              'Valor Liquidado Total', 'Diferença Pago Liquidado'])
+
+    # Carregando dados da QUERY 2
+    df2_trimestre = fetch_data(db, dw_queries.QUERY2, ['Modalidade Nome', 'Trimestre', 'Valor Total'])
+    df2_ano = fetch_data(db, dw_queries.QUERY3, ['Modalidade Nome', 'Valor Total'])
     
 
     with st.spinner("Loding..."):
@@ -48,6 +52,8 @@ def write():
         st.title("📊 Gráfico 1")
         st.write("> # 1 -  Calcular os 20 maiores valores pagos e liquidados, bem como a diferença entre os valores para cada "
                  "credor ao longo do tempo:")
+        st.write("#### ```Utilize o dropdown para selecionar o mês, e ter acesso "
+                 "aos valores gastos por cada Credor no respectivo mês.```")
         
         # Adicionando um dropdown para escolher o mês:
         mes_selected = st.selectbox('Escolha um mês:', df1['mes'].unique())
@@ -57,11 +63,38 @@ def write():
 
 
         #Gerando o gráfico para a pergunta 1:
-        fig = px.bar(df1_filtered, x='credor', y=['valor_pago_total', 'diferenca_pago_liquidado'], 
+        fig1 = px.bar(df1_filtered, x='credor', y=['Valor Pago Total', 'Diferença Pago Liquidado'], 
                  labels={
                         'credor' : 'Credor',
                         'variable': 'Valores'
                         },
                  title='Valor Pago e Valor Liquidado por Credor')
-        fig.update_layout(barmode='stack', xaxis={'categoryorder':'total descending'})
-        st.plotly_chart(fig)
+        fig1.update_layout(barmode='stack', xaxis={'categoryorder':'total descending'})
+        st.plotly_chart(fig1)
+
+        st.divider()
+
+        st.title("📊 Gráfico 2")
+        st.write("> # 2 - Qual a porcentagem de gastos totais gerados por cada modalidade de licitação?")
+        st.write("#### ```Utilize o dropdown para selecionar o trimestre, e ter acesso a todos"
+                 "aos valores gastos por cada forma de licitação em cada trimestre de 2021.```")
+        st.write("#")
+
+        #Função utilizada para a criação do gráfico da segunda questão
+        def grafico2(data):
+            fig = px.pie(data, names='Modalidade Nome', values='Valor Total',
+                title='Distribuição de Gastos por Modalidade de Licitação')
+            st.plotly_chart(fig)
+
+        # Adicionando um dropdown para escolher o trimestre:
+        #Criei uma lista para adicionar a opção de escolher o ano no selectbox, e não apenas os valores do semestre
+        period = ['Ano Total', 'Trimestre 1', 'Trimestre 2', 'Trimestre 3', 'Trimestre 4']
+        selected_period = st.selectbox('Escolha um período:', period)
+
+        #condição para decisão de qual dos dataframes utilizarei
+        if selected_period == 'Ano Total':
+            df2_filtered = df2_ano
+            grafico2(df2_filtered)
+        else:
+            df2_filtered = df2_trimestre[df2_trimestre['Trimestre'] == selected_period]
+            grafico2(df2_filtered)
