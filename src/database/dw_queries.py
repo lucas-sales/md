@@ -45,14 +45,17 @@ GROUP BY
 
 QUERY4 = """
 SELECT
-    data.mes_movimentacao,
-    COUNT(*) AS p.valor_pago,
-    SUM(p.valor_pago) AS total_pagamentos
+    d.mes_texto AS 'Mes',
+    COUNT(p.codigo) AS 'Quantidade de pagamentos',
+    AVG(p.valor_pago) AS 'Media Mensal',
+    SUM(p.valor_pago) AS 'Pagamento Total'
 FROM
     ft_pagamento p
 JOIN
-    dm_data data ON p.cod_tempo = data.keyData
-GROUP BY    data.mes_movimentacao 
-order by total_pagamentos desc;
+    dm_data d ON p.cod_tempo = d.keyData
+GROUP BY
+	d.mes_texto
+ORDER BY
+    d.mes_texto;
 """
 
