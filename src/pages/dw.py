@@ -30,6 +30,16 @@ def fetch_data(db, query, columns):
     data = db.select(query)
     return pd.DataFrame(data, columns=columns)
 
+#Função utilizada para a criação do gráfico da segunda questão
+def grafico2(data):
+    fig = px.pie(data, names='Modalidade Nome', values='Valor Total',
+        title='Distribuição de Gastos por Modalidade de Licitação')
+    st.plotly_chart(fig)
+
+def grafico3(data):
+    pass
+
+        
 def write():
     # Configura a conexão com o banco de dados
     db = data_setup()
@@ -41,6 +51,9 @@ def write():
     # Carregando dados da QUERY 2
     df2_trimestre = fetch_data(db, dw_queries.QUERY2, ['Modalidade Nome', 'Trimestre', 'Valor Total'])
     df2_ano = fetch_data(db, dw_queries.QUERY3, ['Modalidade Nome', 'Valor Total'])
+
+    # CArregando dados da QUERY 4
+    # df4 = fetch_data(db, dw_queries.QUERY4, ['Mês', 'quantidade de pag.', 'total pag.'])
     
 
     with st.spinner("Loding..."):
@@ -54,6 +67,8 @@ def write():
                  "credor ao longo do tempo:")
         st.write("#### ```Utilize o dropdown para selecionar o mês, e ter acesso "
                  "aos valores gastos por cada Credor no respectivo mês.```")
+        
+        st.write("### ```Clique na legenda abaixo para remover do gráfico```")
         
         # Adicionando um dropdown para escolher o mês:
         mes_selected = st.selectbox('Escolha um mês:', df1['mes'].unique())
@@ -78,13 +93,8 @@ def write():
         st.write("> # 2 - Qual a porcentagem de gastos totais gerados por cada modalidade de licitação?")
         st.write("#### ```Utilize o dropdown para selecionar o trimestre, e ter acesso a todos"
                  "aos valores gastos por cada forma de licitação em cada trimestre de 2021.```")
+        st.write("### ```Clique na legenda abaixo para remover do gráfico```")
         st.write("#")
-
-        #Função utilizada para a criação do gráfico da segunda questão
-        def grafico2(data):
-            fig = px.pie(data, names='Modalidade Nome', values='Valor Total',
-                title='Distribuição de Gastos por Modalidade de Licitação')
-            st.plotly_chart(fig)
 
         # Adicionando um dropdown para escolher o trimestre:
         #Criei uma lista para adicionar a opção de escolher o ano no selectbox, e não apenas os valores do semestre
@@ -98,3 +108,6 @@ def write():
         else:
             df2_filtered = df2_trimestre[df2_trimestre['Trimestre'] == selected_period]
             grafico2(df2_filtered)
+
+        st.title("📊 Gráfico 3")
+        # st.table(df4)

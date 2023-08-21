@@ -9,7 +9,7 @@ import streamlit as st
 
 PAGES = {
     "Home": src.pages.home,
-    "Banco tradicional": src.pages.db_tradicional,
+    "Banco origem": src.pages.db_tradicional,
     "Data Warehouse": src.pages.dw,
     "About": src.pages.about,
 }
