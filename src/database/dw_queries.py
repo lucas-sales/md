@@ -19,7 +19,7 @@ ORDER BY
    SUM(p.valor_pago - p.valor_liquidado) DESC;
 """
 
-# -- 1 - mostrar a distribuição percentual dos gastos por modalidade de licitação.
+# -- 2 - Qual a porcentagem de gastos totais gerados por cada modalidade de licitação?;
 QUERY2 = """SELECT
     ml.nome AS 'Modalidade Nome',
     trimestre_texto AS 'Trimestre',
@@ -33,7 +33,7 @@ JOIN
 GROUP BY
     ml.nome, trimestre_texto;
 """
-QUERY3 ="""SELECT
+QUERY2_1 ="""SELECT
     ml.nome AS 'Modalidade Nome',
     SUM(p.valor_pago) AS 'Valor Total'
 FROM
@@ -43,3 +43,47 @@ JOIN
 GROUP BY
     ml.nome;"""
 
+# -- 3 - Quais são os 10 principais credores com base no valor total pago?
+
+QUERY3 ="""SELECT c.nome AS credor, SUM(p.valor_pago) AS valor_total_pago
+FROM dm_credor c
+JOIN ft_pagamento p ON c.`key` = p.cod_credor
+GROUP BY c.nome
+ORDER BY valor_total_pago DESC
+LIMIT 10;"""
+
+# 4 - Tendência Trimestral de Pagamento: Através de um gráfico de linha é possível
+#     mostrar as tendências trimestrais nos valores pagos, liquidados e empenhados?
+QUERY4 ="""SELECT
+    d.trimestre_texto,
+    SUM(p.valor_pago) AS valor_pago_trimestre,
+    SUM(p.valor_liquidado) AS valor_liquidado_trimestre,
+    SUM(p.valor_empenhado) AS valor_empenhado_trimestre
+FROM
+    ft_pagamento p
+JOIN
+    dm_data d ON p.cod_tempo = d.keyData
+GROUP BY
+	d.trimestre_texto
+ORDER BY
+    d.trimestre_texto;"""
+
+# 5 - Durante o período chuvoso(Abril, maio, junho, julho e agosto),
+#     há gastos em urbanização na cidade do Recife?
+QUERY5 = """SELECT
+    mes_texto,
+    a.nome AS acao,
+    SUM(p.valor_pago) AS valor_total_pago
+FROM
+    ft_pagamento p
+JOIN
+    dm_data d ON p.cod_tempo = d.keyData
+JOIN
+    dm_acao a ON p.cod_acao = a.key
+WHERE
+    d.mes_texto IN ('Abr', 'Mai', 'Jun', 'Jul', 'Ago')
+GROUP BY
+    d.mes_texto, a.nome
+ORDER BY
+	d.mes_texto, valor_total_pago DESC
+LIMIT 10;"""

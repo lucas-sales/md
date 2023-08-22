@@ -40,8 +40,18 @@ def write():
 
     # Carregando dados da QUERY 2
     df2_trimestre = fetch_data(db, dw_queries.QUERY2, ['Modalidade Nome', 'Trimestre', 'Valor Total'])
-    df2_ano = fetch_data(db, dw_queries.QUERY3, ['Modalidade Nome', 'Valor Total'])
-    
+    df2_ano = fetch_data(db, dw_queries.QUERY2_1, ['Modalidade Nome', 'Valor Total'])
+
+
+    #Carregando dados da QUERY 3
+    df3 = fetch_data(db, dw_queries.QUERY3, ['credor', 'valor_total_pago'])
+
+    # Carregando dados da QUERY 4
+    df4 = fetch_data(db, dw_queries.QUERY4, ['trimestre_texto', 'valor_pago_trimestre', 'valor_liquidado_trimestre',
+                                             'valor_empenhado_trimestre'])
+
+    # Carregando dados da QUERY 5
+    df5 = fetch_data(db, dw_queries.QUERY5, ['mes_texto', 'acao', 'valor_total_pago'])
 
     with st.spinner("Loding..."):
         st.title(' 🖥 Data Warehouse')
@@ -98,3 +108,91 @@ def write():
         else:
             df2_filtered = df2_trimestre[df2_trimestre['Trimestre'] == selected_period]
             grafico2(df2_filtered)
+
+        st.divider()
+
+        st.title("📊 Gráfico 3")
+        st.write("> # 3 - Quais são os 10 principais credores com base no valor total pago?")
+        st.write("#### ``` ```")
+        st.write("#")
+
+        # Gerando o gráfico para a pergunta 3:
+        fig3 = px.bar(df3, x='credor', y='valor_total_pago',
+                      labels={
+                          'credor': 'Credor',
+                          'valor_total_pago': 'Valor Total Pago'
+                      },
+                      title='10 Principais Credores com base no Valor Total Pago')
+        fig3.update_layout(xaxis={'categoryorder': 'total descending'})
+        st.plotly_chart(fig3)
+
+        st.divider()
+
+        st.title("📊 Gráfico 4")
+        st.write("> # 4 - Tendência Trimestral de Pagamento: Através de um gráfico de linha é possível "
+                 "mostrar as tendências trimestrais nos valores pagos, liquidados e empenhados?")
+        st.write("#### ``` Selecione as métricas abaixo e visualize no gráfico de linhas: ```")
+        st.write("#")
+
+        # Adicionando um multiselect para permitir que os usuários escolham as métricas
+        selected_metrics = st.multiselect('Escolha as métricas:',
+                                          options=['Valor Pago Trimestre', 'Valor Liquidado Trimestre',
+                                                   'Valor Empenhado Trimestre'],
+                                          default=['Valor Pago Trimestre', 'Valor Liquidado Trimestre',
+                                                   'Valor Empenhado Trimestre'])
+
+        # Mapeando o nome da métrica selecionada para a coluna correspondente
+        metrics_mapping = {
+            'Valor Pago Trimestre': 'valor_pago_trimestre',
+            'Valor Liquidado Trimestre': 'valor_liquidado_trimestre',
+            'Valor Empenhado Trimestre': 'valor_empenhado_trimestre'
+        }
+        selected_columns = [metrics_mapping[metric] for metric in selected_metrics]
+
+        # Criando um gráfico de linha com as métricas selecionadas
+        fig4 = px.line(df4, x='trimestre_texto', y=selected_columns,
+                       title='Tendência Trimestral de Pagamento',
+                       labels={
+                           'trimestre_texto': 'Trimestre',
+                           'value': 'Valor'
+                       })
+
+        # Adicionando legenda customizada
+        for metric in selected_metrics:
+            fig4.update_traces(
+                hovertemplate=f'<b>%{{x}}</b><br>Valor: %{{y:.2f}}<extra></extra>',
+                name=metric,
+                selector=dict(variable=metrics_mapping[metric]))
+
+        # Exibindo o gráfico
+        st.plotly_chart(fig4)
+
+        st.divider()
+
+        st.title("📊 Gráfico 5")
+        st.write("> # Durante o período chuvoso(abril, maio, junho, julho e agosto), "
+                 "há gastos em urbanização na cidade do Recife?")
+        st.write("#### ``` Selecione as métricas abaixo e visualize no gráfico de linhas: ```")
+
+        st.write("#")
+
+        # Adicionando um dropdown para escolher o mês:
+        mes_selected_5 = st.selectbox('Escolha um mês:', ['Todos'] + list(df5['mes_texto'].unique()))
+
+        # Filtrando o DataFrame com base na seleção do mês (se não for 'Todos'):
+        if mes_selected_5 != 'Todos':
+            df5 = df5[df5['mes_texto'] == mes_selected_5]
+
+        # Pivotando o DataFrame para obter os meses como colunas e as ações como índices
+        df5_pivot = df5.pivot_table(index='acao', columns='mes_texto', values='valor_total_pago', fill_value=0)
+
+        # Criando um gráfico de barras empilhadas
+        fig5 = px.bar(df5_pivot, x=df5_pivot.index, y=df5_pivot.columns,
+                      title='Valor Total Pago por Ação e Mês',
+                      labels={'value': 'Valor Total Pago', 'variable': 'Mês', 'index': 'Ação'})
+
+        # Atualizando o layout para melhor visualização
+        fig5.update_layout(barmode='stack')
+
+        # Exibindo o gráfico
+        st.plotly_chart(fig5)

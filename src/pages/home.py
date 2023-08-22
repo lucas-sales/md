@@ -31,7 +31,7 @@ def write():
         melhorar a qualidade de vida dos cidadãos.""")
     
     st.write("""
-        ## Perguntas
+        ## Perguntas - DB Tradicional
              1 - Quanto é a média líquida paga pelos 50 maiores credores no primeiro semestre de 2021?
 
             2 - Qual o valor empenhado total para cada ação em cada trimestre do ano de 2021?
@@ -42,6 +42,22 @@ def write():
 
             5 - Qual o total e a média de valor liquidado em licitações classificadas com nome “INEXIGIBILIDADE” e sua respectiva fonte de janeiro a julho dos últimos 2 anos?
 """)
+
+    st.divider()
+
+    st.write("""
+            ## Perguntas - DW
+                1 - Quais os 20 maiores valores pagos e liquidados, bem como a diferença entre os valores para cada credor ao longo do tempo?
+
+                2 - Qual a porcentagem de gastos totais gerados por cada modalidade de licitação?
+
+                3 - Quais são os 10 principais credores com base no valor total pago?
+
+                4 - Tendência Trimestral de Pagamento: Através de um gráfico de linha é possível mostrar as tendências trimestrais nos valores pagos, liquidados e empenhados?
+
+                5 - Durante o período chuvoso(Abril, maio, junho, julho e agosto), há gastos em urbanização na cidade do Recife?
+
+    """)
     
     
 
